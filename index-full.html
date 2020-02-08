@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="email=no" name="format-detection">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.min.js"></script>
+    <script src="https://www.pintuer.com/js/pintuer.js"></script>
+    <script src="https://www.pintuer.com/plugins/respond.js"></script>
+    <link href="https://www.pintuer.com/css/pintuer.css" rel="stylesheet">
+    <style>
+        @media (max-width: 1000px) {
+            .list-group {
+                overflow: scroll;
+                height: 60vh;
+            }
+        }
+
+        @media (min-width: 1000px) {
+            .list-group {
+                overflow: scroll;
+                height: 93vh;
+            }
+        }
+
+        .list-group {
+            overflow-x: hidden;
+        }
+
+        .fixed-bottom {
+            width: 91vw;
+        }
+    </style>
+    <script>
+        $(window).ready(() => {
+            $('.button-group.radio .button').click(() => {
+                $('#connect').removeAttr('disabled')
+            })
+            $('#submit').click(() => {
+                addToList('', $('#idiom').val())
+                socket.send($('#idiom').val())
+                $('#idiom').val('')
+            })
+        })
+        var socket;
+        var ismodeselect = false
+        var isconnect = false
+        var i = 0;
+        const addToList = (style, text) => {
+            i++;
+            $('#list').append('<li tabindex="' + i + '" class="listitem ' + style + '">' + text + '</li>')
+            $('#list').scrollTop(i * 40)
+        }
+        const connectsocket = () => {
+            let host = window.location.host,
+                protocol = window.location.protocol == 'https:' ? 'wss:' : 'ws:'
+            socket = new WebSocket(protocol + '//' + host + '/cyjl');
+            $('#isconnect').removeClass('hidden')
+            $('#disconnect').addClass('hidden')
+            $('#connect').removeClass('bg-mix')
+            $('#connect').removeClass('bg-red')
+            $('#connect').addClass('bg-green')
+            $('#list').empty()
+            i = 0
+            socket.onmessage = e => {
+                console.log(`[message] Data received from server: ${e.data}`);
+                if (!ismodeselect) {
+                    socket.send($('label.active input[type="radio"]').attr('value'))
+                    ismodeselect = true
+                    $('#submit').removeAttr('disabled')
+                    $('#idiom').removeAttr('disabled')
+                } else {
+                    var dict = JSON.parse(e.data)
+                    if (dict.status) {
+                        console.log(dict.status)
+                        if (!dict.output) {
+                            addToList('bg-green', '你先 :)')
+                        } else {
+                            if ($('#list').children().length === 0)
+                                addToList('bg-red', '电脑先 :(')
+                            addToList('', dict.output)
+                            if (dict.extra)
+                                addToList('bg-mix', dict.extra)
+                        }
+                    } else {
+                        if (dict.extra) {
+                            addToList('bg-green', '电脑GG了')
+                            addToList('bg-green', '你赢了')
+                        } else {
+                            addToList('bg-red', '你GG了')
+                            if (dict.output) addToList('bg-mix', dict.output)
+                        }
+                    }
+                }
+            };
+            socket.onclose = e => {
+                if (event.wasClean) {
+                    console.log(`[close] Connection closed cleanly, code=${e.code} reason=${e.reason}`);
+                } else {
+                    console.log('[close] Connection died');
+                }
+                $('#disconnect').removeClass('hidden')
+                $('#isconnect').addClass('hidden')
+                $('#connect').removeClass('bg-mix')
+                $('#connect').removeClass('bg-green')
+                $('#connect').addClass('bg-red')
+                ismodeselect = false
+                $('#submit').attr('disabled', '')
+                $('#idiom').attr('disabled', '')
+            };
+            socket.onerror = e => {
+                console.log(`[error] ${e.message}`);
+                $('#disconnect').removeClass('hidden')
+                $('#isconnect').addClass('hidden')
+                $('#connect').removeClass('bg-mix')
+                $('#connect').removeClass('bg-green')
+                $('#connect').addClass('bg-red')
+                ismodeselect = false
+                $('#submit').attr('disabled', '')
+                $('#idiom').attr('disabled', '')
+            };
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="line-big">
+            <div class="container text-center" style="font-size: 2.25em;">
+                <strong><span>成语接龙</span></strong>
+                <span class="float-right"><a style="font-size:14px" href="https://github.com/BoringCat/idiom-solitaire"
+                        target="_blank">
+                        <svg style="height:1rem;width:1rem;vertical-align:top;margin-top: 17.5px;
+                    margin-right: 5px;" viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                            </path>
+                        </svg>成语接龙</a></span>
+            </div>
+            <hr>
+            <div class="xm8 xs12">
+                <ul id="list" class="list-group">
+                </ul>
+            </div>
+            <br />
+            <div class="xs12 xm4">
+                <form onsubmit="return false;">
+                    <div class="form-group">
+                        <div class="label">
+                            <label for="idiom">成语：</label>
+                        </div>
+                        <div class="field">
+                            <input disabled type="text" class="input" id="idiom" name="idiom" size="30"
+                                placeholder="输入成语" />
+                        </div>
+                    </div>
+                    <div class="form-group disabled">
+                        <div class="label">
+                            <label>接龙模式</label>
+                        </div>
+                        <div class="field">
+                            <div class="button-group radio">
+                                <label class="button">
+                                    <input name="mode" value="拼音" checked="checked" type="radio"><span
+                                        class="icon icon-check"></span>拼音接龙模式
+                                </label>
+                                <label class="button">
+                                    <input name="mode" value="文字" type="radio"><span
+                                        class="icon icon-check"></span>文字接龙模式
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-button">
+                        <button id="submit" class="button border-blue float-right" disabled>提交</button>
+                        <button id="connect" class="button bg-mix float-left" disabled onclick="connectsocket()">
+                            <span id="isconnect" class="icon icon-check hidden"></span>
+                            <span id="disconnect" class="icon icon-times hidden"></span>
+                            连接
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</body>
+
+</html>

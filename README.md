@@ -1,36 +1,6 @@
-# 成语接龙
-## 本地使用方法
-|服务端|客户端|
-|:--:|:--:|
-|`python app.py`| `python -m websockets ws://localhost:8765`|
+# 成语接龙Web
 
-## 部署方法
-``` shell
-$ export APP_LISTEN='::'
-$ export APP_PORT='8765'
-$ export APP_PATH='/'
-$ python app.py
-```
-
-## Docker Compose
-``` yaml
-version: '2'
-services:
-  idiom-solitaire:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      APP_LISTEN: '::'
-      APP_PORT: 8765
-      APP_PATH: '/'
-    image: $(你喜欢)
-    ports:
-      - 127.0.0.1:8765:8765
-    volumes:
-      - ./datas:/app/datas
-```
+这是个静态HTML而已
 
 ## English Version?
 **What? This is Chinese idiom. :(**
