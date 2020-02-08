@@ -24,14 +24,16 @@ CLOSE_CODES = {
 }
 
 async def cyjl(websocket:websockets.server.WebSocketServerProtocol, path):
-    websocket.close_connection()
-    if path != globals()['path']: return
+    print(path)
+    print(globals()['path'])
+    if path != globals()['path']: 
+        await websocket.close_connection()
+        return 
     await websocket.send('选择模式')
     mode = await websocket.recv()
     if mode not in ['拼音', '文字']:
         await websocket.send('接龙模式 必须为\'拼音\' 或者 \'文字\'。')
         await websocket.close(1001, "mode error")
-    await websocket.send(mode)
     jl = 成语接龙(4)
     jl.选择配置(mode)
 

@@ -5,7 +5,7 @@ from sys import argv as 外部输入
 class 成语接龙():
     def __init__(self, length = None):
         try:
-            self.成语字典 = 加载配置(open('idneed.json','r',encoding='UTF-8'))
+            self.成语字典 = 加载配置(open('datas/idneed.json','r',encoding='UTF-8'))
         except FileNotFoundError as e:
             raise FileNotFoundError('找不到成语字典，请使用"更新成语.py"获取最新成语字典', *e.args)
         self.程序输出 = ''
@@ -23,7 +23,7 @@ class 成语接龙():
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, 程序拼音尾, 用户拼音头), None
         可接列表 = self.头部字典.get(用户拼音尾,[])
         if not 可接列表:
-            return False, '卧槽(＃°Д°)我居然接不上来？？！！！', None
+            return False, '卧槽(＃°Д°)我居然接不上来？？！！！', True
         self.程序输出 = 随机选择(可接列表)
         return True, self.程序输出, None if bool(self.头部字典.get(self.尾部字典[self.程序输出][-1], None)) else "\n我觉得你接不上来:)"
 
@@ -35,7 +35,7 @@ class 成语接龙():
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, self.程序输出[-1], 用户输入[0]), None
         self.程序输出 = 随机选择(self.头部字典.get(结尾, [None]))
         if not self.程序输出:
-            return False, '卧槽(＃°Д°)我居然接不上来？？！！！', None
+            return False, '卧槽(＃°Д°)我居然接不上来？？！！！', True
         return True, self.程序输出, (None if self.头部字典.get(self.程序输出[-1], None) else "\n我觉得你接不上来:)")
 
     def 电脑开局(self):
