@@ -3,6 +3,7 @@
 import asyncio
 import websockets
 import random
+from os import environ
 from json import dumps
 from 成语接龙 import 成语接龙
 
@@ -22,9 +23,9 @@ CLOSE_CODES = {
     1015: "TLS failure [internal]",
 }
 
-async def hello(websocket:websockets.server.WebSocketServerProtocol, path):
+async def cyjl(websocket:websockets.server.WebSocketServerProtocol, path):
     websocket.close_connection()
-    if path != '/': return
+    if path != globals()['path']: return
     await websocket.send('选择模式')
     mode = await websocket.recv()
     if mode not in ['拼音', '文字']:
@@ -52,7 +53,11 @@ async def hello(websocket:websockets.server.WebSocketServerProtocol, path):
 
     await websocket.close(1011, "??????")
 
-start_server = websockets.serve(hello, "::", 8765)
+addr = environ.get('APP_LISTEN', 'localhost')
+port = int(environ.get('APP_PORT', '8765'))
+path = environ.get('APP_PATH', '/')
+
+start_server = websockets.serve(cyjl, addr, port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 try:

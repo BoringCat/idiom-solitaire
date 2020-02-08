@@ -107,4 +107,4 @@ venv.bak/
 .vscode/
 
 # custom fule
-idneed.json
+datas/
