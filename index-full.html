@@ -39,7 +39,81 @@
         
     </style>
     <script>
-$(window).ready(()=>{$('.button-group.radio .button').click(()=>{$('#connect').removeAttr('disabled')});$('#submit').click(()=>{addToList('',$('#idiom').val());socket.send($('#idiom').val());$('#idiom').val('')})});var socket,ismodeselect=isconnect=false,i=0;const addToList=(style,text)=>{i++;$('#list').append('<li tabindex="'+i+'"class="listitem '+style+'">'+text+'</li>');$('#list').scrollTop(i*40)};const connectsocket=()=>{let host=window.location.host,protocol=window.location.protocol=='https:'?'wss:':'ws:';socket=new WebSocket(protocol+'//'+host+'/cyjl');$('#isconnect').addClass('hidden');$('#disconnect').addClass('hidden');$('#connecting').removeClass('hidden');$('#list').empty();i=0;socket.onmessage=e=>{if(!ismodeselect){socket.send($('label.active input[type="radio"]').attr('value'));ismodeselect=true;$('#submit').removeAttr('disabled');$('#idiom').removeAttr('disabled');$('#connect').removeClass('bg-mix');$('#connect').removeClass('bg-red');$('#connect').addClass('bg-green');$('#isconnect').removeClass('hidden');$('#disconnect').addClass('hidden');$('#connecting').addClass('hidden');$('#connect').attr('disabled','')}else{var dict=JSON.parse(e.data);if(dict.status){if(!dict.output){addToList('bg-green','你先 :)')}else{if($('#list').children().length===0);addToList('bg-red','电脑先 :(');addToList('',dict.output);if(dict.extra);addToList('bg-mix',dict.extra)}}else{if(dict.extra){addToList('bg-green','电脑GG了');addToList('bg-green','你赢了')}else{addToList('bg-red','你GG了');if(dict.output)addToList('bg-mix',dict.output)}}}};socket.onclose=e=>{$('#disconnect').removeClass('hidden');$('#isconnect').addClass('hidden');$('#connecting').addClass('hidden');$('#connect').removeClass('bg-mix');$('#connect').removeClass('bg-green');$('#connect').addClass('bg-red');ismodeselect=false;$('#submit').attr('disabled','');$('#idiom').attr('disabled','');$('#connect').removeAttr('disabled')};socket.onerror=e=>{$('#disconnect').removeClass('hidden');$('#isconnect').addClass('hidden');$('#connecting').addClass('hidden');$('#connect').removeClass('bg-mix');$('#connect').removeClass('bg-green');$('#connect').addClass('bg-red');ismodeselect=false;$('#submit').attr('disabled','');$('#idiom').attr('disabled','');$('#connect').removeAttr('disabled')}}
+        $(window).ready(()=>{
+            $('#mode .button').click(()=>{
+                $('#connect').removeAttr('disabled')
+            })
+            $('#submit').click(()=>{
+                addToList('',$('#idiom').val())
+                socket.send($('#idiom').val())
+                $('#idiom').val('')})
+            })
+            var socket,
+            ismodeselect=isconnect=false,
+            i=0
+            const addToList=(style,text)=>{
+                i++;
+                $('#list').append('<li tabindex="'+i+'"class="listitem '+style+'">'+text+'</li>')
+                $('#list').scrollTop(i*40)
+            }
+            const connectsocket=()=>{
+                let host=window.location.host,
+                protocol=window.location.protocol=='https:'?'wss:':'ws:'
+                socket=new WebSocket(protocol+'//'+host+'/cyjl')
+                $('#isconnect').addClass('hidden')
+                $('#disconnect').addClass('hidden')
+                $('#connecting').removeClass('hidden')
+                $('#list').empty()
+                i=0
+                socket.onmessage=e=>{
+                    if(!ismodeselect){
+                        socket.send($('label.active input[type="radio"]').val()+','+($('.button.active input[name="noyd"]').val()||'False'))
+                        ismodeselect=true
+                        $('#connect').attr('disabled','')
+                    }else{
+                        $('#submit').removeAttr('disabled')
+                        $('#idiom').removeAttr('disabled')
+                        $('#connect').removeClass('bg-mix')
+                        $('#connect').removeClass('bg-red')
+                        $('#connect').addClass('bg-green')
+                        $('#isconnect').removeClass('hidden')
+                        $('#disconnect').addClass('hidden')
+                        $('#connecting').addClass('hidden')
+                        var dict=JSON.parse(e.data)
+                        if(dict.status){
+                            if(!dict.output){
+                                addToList('bg-green','你先 :)')
+                            }else{
+                                if($('#list').children().length===0)
+                                    addToList('bg-red','电脑先 :(');addToList('',dict.output)
+                                if(dict.extra)
+                                    addToList('bg-mix',dict.extra)
+                            }
+                        }else{
+                            if(dict.extra){
+                                addToList('bg-green','电脑GG了');
+                                addToList('bg-green','你赢了')
+                            }else{
+                                addToList('bg-red','你GG了');
+                                if(dict.output)
+                                    addToList('bg-mix',dict.output)
+                            }
+                        }
+                    }
+                }
+                socket.onclose=socket.onerror=e=>{
+                    $('#disconnect').removeClass('hidden');
+                    $('#isconnect').addClass('hidden');
+                    $('#connecting').addClass('hidden');
+                    $('#connect').removeClass('bg-mix');
+                    $('#connect').removeClass('bg-green');
+                    $('#connect').addClass('bg-red');
+                    ismodeselect=false;
+                    $('#submit').attr('disabled','');
+                    $('#idiom').attr('disabled','');
+                    $('#connect').removeAttr('disabled')
+                }
+            }
     </script>
 </head>
 
@@ -79,19 +153,30 @@ $(window).ready(()=>{$('.button-group.radio .button').click(()=>{$('#connect').r
                                 placeholder="输入成语" />
                         </div>
                     </div>
-                    <div class="form-group disabled">
+                    <div class="form-group">
                         <div class="label">
                             <label>接龙模式</label>
                         </div>
                         <div class="field">
-                            <div class="button-group radio">
+                            <div id="mode" class="button-group radio">
                                 <label class="button">
-                                    <input name="mode" value="拼音" checked="checked" type="radio"><span
+                                    <input name="mode" value="拼音" type="radio"><span
                                         class="icon icon-check"></span>拼音接龙模式
                                 </label>
                                 <label class="button">
                                     <input name="mode" value="文字" type="radio"><span
                                         class="icon icon-check"></span>文字接龙模式
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-auto">
+                        <div class="input-inline">
+                            <label><strong>拼音接龙选项:</strong></label>
+                            <div class="button-group checkbox">
+                                <label class="button">
+                                    <input name="noyd" value="True" type="checkbox"><span
+                                        class="icon icon-check"></span>去音调
                                 </label>
                             </div>
                         </div>
