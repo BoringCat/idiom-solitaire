@@ -5,9 +5,9 @@ from sys import argv as 外部输入
 class 成语接龙():
     def __init__(self, length = None):
         try:
-            self.成语字典 = 加载配置(open('datas/idneed.json','r',encoding='UTF-8'))
+            self.成语字典 = 加载配置(open('datas/idiom.json','r',encoding='UTF-8'))
         except FileNotFoundError as e:
-            raise FileNotFoundError('找不到成语字典，请使用"更新成语.py"获取最新成语字典', *e.args)
+            raise FileNotFoundError('找不到成语字典', *e.args)
         self.程序输出 = ''
         self.头部字典 = {}
         self.尾部字典 = {}

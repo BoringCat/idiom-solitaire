@@ -1,4 +1,8 @@
 # 成语接龙
+
+## 成语来源
+[**成语词典 - Google Play 上的应用**](https://play.google.com/store/apps/details?id=com.qiushui.android.app.idiom)
+
 ## 本地使用方法
 |服务端|客户端|
 |:--:|:--:|
