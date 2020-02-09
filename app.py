@@ -30,11 +30,17 @@ async def cyjl(websocket:websockets.server.WebSocketServerProtocol, path):
         await websocket.close_connection()
         return 
     await websocket.send('选择模式')
-    mode = await websocket.recv()
+    raw = (await websocket.recv()).split(',', maxsplit=1)
+    if len(raw) == 2:
+        mode, noyd = raw
+    else:
+        noyd = False
+        mode = raw
+    noyd = noyd in [True, 'True', 'true']
     if mode not in ['拼音', '文字']:
         await websocket.send('接龙模式 必须为\'拼音\' 或者 \'文字\'。')
         await websocket.close(1001, "mode error")
-    jl = 成语接龙(4)
+    jl = 成语接龙(4, noyd)
     jl.选择配置(mode)
 
     if random.random() >= 0.6:

@@ -3,7 +3,7 @@ from random import choice as 随机选择
 from sys import argv as 外部输入
 
 class 成语接龙():
-    def __init__(self, length = None):
+    def __init__(self, length = None, noyd = False):
         try:
             self.成语字典 = 加载配置(open('datas/idiom.json','r',encoding='UTF-8'))
         except FileNotFoundError as e:
@@ -12,17 +12,27 @@ class 成语接龙():
         self.头部字典 = {}
         self.尾部字典 = {}
         self.length = length
+        self.去音调 = noyd
         self.接龙 = lambda 用户输入: (False, "接个屁啊，你还没选择模式", None)
+        self.音调字典 = {'ā':'a','á':'a','ǎ':'a','à':'a','ō':'o','ó':'o','ǒ':'o','ò':'o',
+        'ē':'e','é':'e','ě':'e','è':'e','ī':'i','í':'i','ǐ':'i','ì':'i','ū':'u','ú':'u','ǔ':'u','ù':'u',
+        'ǖ':'u','ǘ':'u','ǚ':'u','ǜ':'u','ü':'u','ń':'n','ň': 'n'}
+
+    def _去音调(self, 拼音:str):
+        字母 = ''
+        for 音 in 拼音:
+            字母+=self.音调字典.get(音,音)
+        return 字母
 
     def _拼音接龙(self, 用户输入):
         if not self.尾部字典.get(用户输入,None):
             return False, '%s不是一个成语' % 用户输入, None
         用户拼音头, 用户拼音尾 = self.尾部字典.get(用户输入)
-        if 用户拼音头 == 用户拼音尾:
-            return True, 用户输入, None
         _, 程序拼音尾 = self.尾部字典.get(self.程序输出,[None,None])
         if self.程序输出 and 程序拼音尾 != 用户拼音头:
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, 程序拼音尾, 用户拼音头), None
+        if 用户拼音头 == 用户拼音尾:
+            return True, 用户输入, None
         可接列表 = self.头部字典.get(用户拼音尾,[])
         if not 可接列表:
             return False, '卧槽(＃°Д°)我居然接不上来？？！！！', True
@@ -33,10 +43,10 @@ class 成语接龙():
         结尾 = self.尾部字典.get(用户输入, None)
         if not 结尾:
             return False, '%s不是一个成语' % 用户输入, None
-        if 用户输入[0] == 用户输入[-1]:
-            return True, 用户输入, None
         if self.程序输出 and self.程序输出[-1] != 用户输入[0]:
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, self.程序输出[-1], 用户输入[0]), None
+        if 用户输入[0] == 用户输入[-1]:
+            return True, 用户输入, None
         self.程序输出 = 随机选择(self.头部字典.get(结尾, [None]))
         if not self.程序输出:
             return False, '卧槽(＃°Д°)我居然接不上来？？！！！', True
@@ -73,7 +83,7 @@ class 成语接龙():
             for 成语 in self.成语字典:
                 if self.length:
                     if len(成语['word']) != self.length: continue
-                拼音 = 成语['pinyin'].split()[0]
+                拼音 = self._去音调(成语['pinyin'].split()[0]) if self.去音调 else 成语['pinyin'].split()[0]
                 列表 = self.头部字典.get(拼音,[])
                 列表.append(成语['word'])
                 self.头部字典[拼音] = 列表
@@ -81,7 +91,16 @@ class 成语接龙():
                 filter(
                     lambda x:bool(x),
                     map(
-                        lambda 成语: (成语['word'],[成语['pinyin'].split()[0],成语['pinyin'].split()[-1]])if not self.length or len(成语['word']) == self.length else None, 
+                        lambda 成语: (
+                            成语['word'],
+                            [
+                                self._去音调(成语['pinyin'].split()[0]),
+                                self._去音调(成语['pinyin'].split()[-1])
+                            ] if self.去音调 else [
+                                成语['pinyin'].split()[0],
+                                成语['pinyin'].split()[-1]
+                            ]
+                        ) if not self.length or len(成语['word']) == self.length else None, 
                         self.成语字典
                     )
                 )
@@ -93,7 +112,7 @@ class 成语接龙():
 if __name__ == "__main__":
     try:
         模式 = 外部输入[1] if len(外部输入) >= 2 else None
-        接龙 = 成语接龙()
+        接龙 = 成语接龙(4,True)
         接龙.选择配置(模式 if 模式 else input('选择接龙模式(拼音/文字): '))
         while True:
             status, output, extra = 接龙.接龙(input('输入你的成语: '))
