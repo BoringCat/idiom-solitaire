@@ -18,6 +18,8 @@ class 成语接龙():
         if not self.尾部字典.get(用户输入,None):
             return False, '%s不是一个成语' % 用户输入, None
         用户拼音头, 用户拼音尾 = self.尾部字典.get(用户输入)
+        if 用户拼音头 == 用户拼音尾:
+            return True, 用户输入, None
         _, 程序拼音尾 = self.尾部字典.get(self.程序输出,[None,None])
         if self.程序输出 and 程序拼音尾 != 用户拼音头:
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, 程序拼音尾, 用户拼音头), None
@@ -31,6 +33,8 @@ class 成语接龙():
         结尾 = self.尾部字典.get(用户输入, None)
         if not 结尾:
             return False, '%s不是一个成语' % 用户输入, None
+        if 用户输入[0] == 用户输入[-1]:
+            return True, 用户输入, None
         if self.程序输出 and self.程序输出[-1] != 用户输入[0]:
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, self.程序输出[-1], 用户输入[0]), None
         self.程序输出 = 随机选择(self.头部字典.get(结尾, [None]))
