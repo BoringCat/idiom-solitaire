@@ -28,12 +28,13 @@ class 成语接龙():
         if not self.尾部字典.get(用户输入,None):
             return False, '%s不是一个成语' % 用户输入, None
         用户拼音头, 用户拼音尾 = self.尾部字典.get(用户输入)
-        _, 程序拼音尾 = self.尾部字典.get(self.程序输出,[None,None])
+        _, 程序拼音尾 = self.尾部字典.get(self.程序输出,(None,None))
         if self.程序输出 and 程序拼音尾 != 用户拼音头:
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, 程序拼音尾, 用户拼音头), None
         if 用户拼音头 == 用户拼音尾:
+            self.程序输出 = 用户输入
             return True, 用户输入, None
-        可接列表 = self.头部字典.get(用户拼音尾,[])
+        可接列表 = self.头部字典.get(用户拼音尾,())
         if not 可接列表:
             return False, '卧槽(＃°Д°)我居然接不上来？？！！！', True
         self.程序输出 = 随机选择(可接列表)
@@ -46,14 +47,15 @@ class 成语接龙():
         if self.程序输出 and self.程序输出[-1] != 用户输入[0]:
             return False, '"%s"接不上"%s"呢（%s—>%s）' % (用户输入, self.程序输出, self.程序输出[-1], 用户输入[0]), None
         if 用户输入[0] == 用户输入[-1]:
+            self.程序输出 = 用户输入
             return True, 用户输入, None
-        self.程序输出 = 随机选择(self.头部字典.get(结尾, [None]))
+        self.程序输出 = 随机选择(self.头部字典.get(结尾, (None,)))
         if not self.程序输出:
             return False, '卧槽(＃°Д°)我居然接不上来？？！！！', True
         return True, self.程序输出, (None if self.头部字典.get(self.程序输出[-1], None) else "\n我觉得你接不上来:)")
 
     def 电脑开局(self):
-        self.程序输出 = 随机选择(self.成语字典)['word']
+        self.程序输出 = 随机选择(tuple(self.尾部字典.keys()))
         if self.接龙 == self._文字接龙:
             return True, self.程序输出 , (None if self.头部字典.get(self.程序输出[-1], None) else "\n我觉得你接不上来:)")
         elif self.接龙 == self._拼音接龙:
@@ -93,13 +95,13 @@ class 成语接龙():
                     map(
                         lambda 成语: (
                             成语['word'],
-                            [
+                            (
                                 self._去音调(成语['pinyin'].split()[0]),
                                 self._去音调(成语['pinyin'].split()[-1])
-                            ] if self.去音调 else [
+                            ) if self.去音调 else (
                                 成语['pinyin'].split()[0],
                                 成语['pinyin'].split()[-1]
-                            ]
+                            )
                         ) if not self.length or len(成语['word']) == self.length else None, 
                         self.成语字典
                     )
