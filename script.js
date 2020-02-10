@@ -1,11 +1,12 @@
 
+
 $(window).ready(() => {
     $('#mode .button').click(() => {
         $('#connect').removeAttr('disabled')
     })
     $('#submit').click(() => {
         $('#submit').attr('disabled', '');
-        addToList('','你: ' + $('#idiom').val())
+        addToList('', '你: ' + $('#idiom').val())
         socket.send($('#idiom').val())
         $('#idiom').val('')
     })
@@ -15,7 +16,7 @@ var socket,
     i = 0
 const addToList = (style, text) => {
     i++;
-    $('#list').append('<li tabindex="' + i + '"class="listitem ' + style + '">' + text + '</li>')
+    $('#list').append('<li class="listitem ' + style + '">' + text + '</li>')
     $('#list').scrollTop(i * 40)
 }
 const connectsocket = () => {
@@ -60,17 +61,16 @@ const connectsocket = () => {
                 }
                 break
             case "msg":
+                addToList('', '电脑: ' + dict.output)
+                if (dict.extra) addToList('bg-mix', '电脑: ' + dict.extra)
+                break
+            case "finish":
                 if (dict.status) {
-                    addToList('', '电脑: ' + dict.output)
-                    if (dict.extra) addToList('bg-mix', '电脑: ' + dict.extra)
+                    addToList('bg-green', '电脑GG了');
+                    addToList('bg-green', '你赢了')
                 } else {
-                    if (dict.extra) {
-                        addToList('bg-green', '电脑GG了');
-                        addToList('bg-green', '你赢了')
-                    } else {
-                        addToList('bg-red', '你GG了');
-                        if (dict.output) addToList('bg-mix', dict.output)
-                    }
+                    addToList('bg-red', '你GG了');
+                    if (dict.output) addToList('bg-mix', dict.output)
                 }
                 break
             default:
