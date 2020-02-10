@@ -4,13 +4,18 @@ $(window).ready(() => {
     $('#mode .button').click(() => {
         $('#connect').removeAttr('disabled')
     })
-    $('#submit').click(() => {
-        $('#submit').attr('disabled', '');
-        addToList('', '你: ' + $('#idiom').val())
-        socket.send($('#idiom').val())
-        $('#idiom').val('')
+    
+    $('#submit').click(submit)
+    $('#idiom').keydown(e=>{
+        if ( e.which == 13 ) submit()
     })
 })
+const submit = () => {
+    $('#submit').attr('disabled', '');
+    addToList('', '你: ' + $('#idiom').val())
+    socket.send($('#idiom').val())
+    $('#idiom').val('')
+}
 var socket,
     ismodeselect = isconnect = false,
     i = 0
@@ -56,7 +61,7 @@ const connectsocket = () => {
                     addToList('bg-green', '你先 :)')
                 } else {
                     addToList('bg-red', '电脑先 :(')
-                    addToList('', dict.output)
+                    addToList('', '电脑: ' + dict.output)
                     if (dict.extra) addToList('bg-mix', '电脑: ' + dict.extra)
                 }
                 $('#submit').removeAttr('disabled')
