@@ -29,8 +29,8 @@ const connectsocket = () => {
         protocol = window.location.protocol == 'https:' ? 'wss:' : 'ws:'
     socket = new WebSocket(protocol + '//' + host + '/cyjl')
     $('#ic').addClass('hidden')
-    $('#ci').addClass('hidden')
-    $('#dc').removeClass('hidden')
+    $('#dc').addClass('hidden')
+    $('#ci').removeClass('hidden')
     $('#l').empty()
     i = 0
     socket.onmessage = e => {
@@ -70,8 +70,8 @@ const connectsocket = () => {
                 $('#c').removeClass('bg-red')
                 $('#c').addClass('bg-green')
                 $('#ic').removeClass('hidden')
-                $('#ci').addClass('hidden')
                 $('#dc').addClass('hidden')
+                $('#ci').addClass('hidden')
                 break
             case "msg":
                 addToList('', '电脑: ' + dict.output)
@@ -95,9 +95,9 @@ const connectsocket = () => {
         }
     }
     socket.onclose = socket.onerror = e => {
-        $('#ci').removeClass('hidden');
+        $('#dc').removeClass('hidden');
         $('#ic').addClass('hidden');
-        $('#dc').addClass('hidden');
+        $('#ci').addClass('hidden');
         $('#c').removeClass('bg-mix');
         $('#c').removeClass('bg-green');
         $('#c').addClass('bg-red');

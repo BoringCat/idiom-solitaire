@@ -27,8 +27,8 @@ s/id="length"/id="le"/g;
 s/<\/button><\/div><\/div><\/div>$//;
 ' web.min/index.html
 
-sed -i 's/#disconnect/#ci/g;
-s/#connecting/#dc/g;
+sed -i 's/#disconnect/#dc/g;
+s/#connecting/#ci/g;
 s/#isconnect/#ic/g;
 s/#connect/#c/g;
 s/#mode/#m/g;
