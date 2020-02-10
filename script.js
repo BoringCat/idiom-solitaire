@@ -59,10 +59,19 @@ const connectsocket = () => {
                     addToList('', dict.output)
                     if (dict.extra) addToList('bg-mix', '电脑: ' + dict.extra)
                 }
+                $('#submit').removeAttr('disabled')
+                $('#idiom').removeAttr('disabled')
+                $('#connect').removeClass('bg-mix')
+                $('#connect').removeClass('bg-red')
+                $('#connect').addClass('bg-green')
+                $('#isconnect').removeClass('hidden')
+                $('#disconnect').addClass('hidden')
+                $('#connecting').addClass('hidden')
                 break
             case "msg":
                 addToList('', '电脑: ' + dict.output)
                 if (dict.extra) addToList('bg-mix', '电脑: ' + dict.extra)
+                $('#submit').removeAttr('disabled')
                 break
             case "finish":
                 if (dict.status) {
