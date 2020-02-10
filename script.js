@@ -11,13 +11,15 @@ $(window).ready(() => {
     })
 })
 const submit = () => {
+    if (sending) return
+    sending = true
     $('#submit').attr('disabled', '');
     addToList('', '你: ' + $('#idiom').val())
     socket.send($('#idiom').val())
     $('#idiom').val('')
 }
 var socket,
-    ismodeselect = isconnect = false,
+    ismodeselect = isconnect = sending = false,
     i = 0
 const addToList = (style, text) => {
     i++;
@@ -34,6 +36,7 @@ const connectsocket = () => {
     $('#list').empty()
     i = 0
     socket.onmessage = e => {
+        sending = false
         try {
             var dict = JSON.parse(e.data)
         } catch (error) {
