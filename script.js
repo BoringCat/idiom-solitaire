@@ -4,7 +4,7 @@ $(window).ready(() => {
     $('#mode .button').click(() => {
         $('#connect').removeAttr('disabled')
     })
-    
+    $('#connect').click(connectsocket)
     $('#submit').click(submit)
     $('#idiom').keydown(e=>{
         if ( e.which == 13 ) submit()
