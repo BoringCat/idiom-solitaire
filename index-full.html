@@ -11,110 +11,8 @@
     <script src="https://www.pintuer.com/js/pintuer.js"></script>
     <script src="https://www.pintuer.com/plugins/respond.js"></script>
     <link href="https://www.pintuer.com/css/pintuer.css" rel="stylesheet">
-    <style>
-        @media (max-width: 1000px) {
-            .list-group {
-                max-height: 60vh;
-            }
-        }
-
-        @media (min-width: 1000px) {
-            .list-group {
-                max-height: 93vh;
-            }
-        }
-
-        .list-group {
-            overflow-y: auto;
-            overflow-x: hidden;
-            min-height: 20px;
-        }
-        @font-face {
-            font-family: 'FontAwesome';
-            src: url('//libs.baidu.com/fontawesome/4.1.0/fonts/fontawesome-webfont.eot?v=4.1.0');
-            src: url('//libs.baidu.com/fontawesome/4.1.0/fonts/fontawesome-webfont.eot?#iefix&v=4.1.0') format('embedded-opentype'),url('//libs.baidu.com/fontawesome/4.1.0/fonts/fontawesome-webfont.woff?v=4.1.0') format('woff'),url('//libs.baidu.com/fontawesome/4.1.0/fonts/fontawesome-webfont.ttf?v=4.1.0') format('truetype'),url('//libs.baidu.com/fontawesome/4.1.0/fonts/fontawesome-webfont.svg?v=4.1.0#fontawesomeregular') format('svg');
-            font-weight: normal;
-            font-style: normal
-        }
-        
-    </style>
-    <script>
-        $(window).ready(()=>{
-            $('#mode .button').click(()=>{
-                $('#connect').removeAttr('disabled')
-            })
-            $('#submit').click(()=>{
-                addToList('',$('#idiom').val())
-                socket.send($('#idiom').val())
-                $('#idiom').val('')})
-            })
-            var socket,
-            ismodeselect=isconnect=false,
-            i=0
-            const addToList=(style,text)=>{
-                i++;
-                $('#list').append('<li tabindex="'+i+'"class="listitem '+style+'">'+text+'</li>')
-                $('#list').scrollTop(i*40)
-            }
-            const connectsocket=()=>{
-                let host=window.location.host,
-                protocol=window.location.protocol=='https:'?'wss:':'ws:'
-                socket=new WebSocket(protocol+'//'+host+'/cyjl')
-                $('#isconnect').addClass('hidden')
-                $('#disconnect').addClass('hidden')
-                $('#connecting').removeClass('hidden')
-                $('#list').empty()
-                i=0
-                socket.onmessage=e=>{
-                    if(!ismodeselect){
-                        socket.send($('label.active input[type="radio"]').val()+','+($('.button.active input[name="noyd"]').val()||'False'))
-                        ismodeselect=true
-                        $('#connect').attr('disabled','')
-                    }else{
-                        $('#submit').removeAttr('disabled')
-                        $('#idiom').removeAttr('disabled')
-                        $('#connect').removeClass('bg-mix')
-                        $('#connect').removeClass('bg-red')
-                        $('#connect').addClass('bg-green')
-                        $('#isconnect').removeClass('hidden')
-                        $('#disconnect').addClass('hidden')
-                        $('#connecting').addClass('hidden')
-                        var dict=JSON.parse(e.data)
-                        if(dict.status){
-                            if(!dict.output){
-                                addToList('bg-green','你先 :)')
-                            }else{
-                                if($('#list').children().length===0)
-                                    addToList('bg-red','电脑先 :(');addToList('',dict.output)
-                                if(dict.extra)
-                                    addToList('bg-mix',dict.extra)
-                            }
-                        }else{
-                            if(dict.extra){
-                                addToList('bg-green','电脑GG了');
-                                addToList('bg-green','你赢了')
-                            }else{
-                                addToList('bg-red','你GG了');
-                                if(dict.output)
-                                    addToList('bg-mix',dict.output)
-                            }
-                        }
-                    }
-                }
-                socket.onclose=socket.onerror=e=>{
-                    $('#disconnect').removeClass('hidden');
-                    $('#isconnect').addClass('hidden');
-                    $('#connecting').addClass('hidden');
-                    $('#connect').removeClass('bg-mix');
-                    $('#connect').removeClass('bg-green');
-                    $('#connect').addClass('bg-red');
-                    ismodeselect=false;
-                    $('#submit').attr('disabled','');
-                    $('#idiom').attr('disabled','');
-                    $('#connect').removeAttr('disabled')
-                }
-            }
-    </script>
+    <script src="static/script.js"></script>
+    <link href="static/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -139,7 +37,9 @@
             <br />
             <div class="xs12 xm4">
                 <div>
-                    <strong class="float-right"><span>成语来源于 <a href="https://play.google.com/store/apps/details?id=com.qiushui.android.app.idiom" target="_blank">成语词典 - Google Play 上的应用</a></span></strong>
+                    <strong class="float-right"><span>成语来源于 <a
+                                href="https://play.google.com/store/apps/details?id=com.qiushui.android.app.idiom"
+                                target="_blank">成语词典 - Google Play 上的应用</a></span></strong>
                 </div>
                 <br />
                 <hr>
@@ -167,6 +67,15 @@
                                     <input name="mode" value="文字" type="radio"><span
                                         class="icon icon-check"></span>文字接龙模式
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="field">
+                            <div class="input-group">
+                                <span class="addon">限制字数</span>
+                                <input type="number" value="4" class="input" id="length" name="length" min="0" max="8"
+                                    placeholder="字数" />
                             </div>
                         </div>
                     </div>
