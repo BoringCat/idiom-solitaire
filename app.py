@@ -65,7 +65,7 @@ async def cyjl(websocket:websockets.server.WebSocketServerProtocol, path):
             await websocket.close(1001, "mode error")
             return
         lenlimit = int(user_length)
-        if lenlimit<0 or lenlimit>8:
+        if (lenlimit<2 or lenlimit>8) and lenlimit != 0:
             await websocket.send(disconnect("长度限制出错"))
             await websocket.close(1001, "limit error")
             return
@@ -78,6 +78,10 @@ async def cyjl(websocket:websockets.server.WebSocketServerProtocol, path):
 
     jl = 成语接龙(lenlimit, noyd)
     jl.选择配置(user_mode)
+    if len(jl.头部字典) == 0 or len(jl.尾部字典) == 0:
+        await websocket.send(disconnect('数据异常'))
+        await websocket.close(1001, "action error")
+        return
     del lenlimit, noyd, user_mode
 
     if random.random() >= 0.6:
