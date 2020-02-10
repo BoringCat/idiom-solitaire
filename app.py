@@ -89,7 +89,7 @@ async def cyjl(websocket:websockets.server.WebSocketServerProtocol, path):
     while True:
         user_input = await websocket.recv()
         if not user_input:
-            await websocket.send(msg(False, None, False))
+            await websocket.send(finish(False, "请输入一个成语"))
             await websocket.close(1000, "Finish")
             return
         status, output, extra = jl.接龙(user_input)
